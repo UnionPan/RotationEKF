@@ -1,0 +1,10 @@
+function pr = get_theta_dot(theta_x, theta_y, w_x, w_y, w_z)
+Jacobian = [[1, sin(theta_x)* tan(theta_y), cos(theta_x) * tan(theta_y)] ;
+            [0, cos(theta_x), -sin(theta_x)] ;
+            [0, sin(theta_x)/cos(theta_y), cos(theta_x)/sin(theta_y)] ];
+pr = Jacobian * [w_x; w_y; w_z];
+end
+
+function prrp= get_theta_dot_rp_free(theta_x, theta_y,  w_x, w_y, w_z)
+prrp = [1 0 0; 0 1 0] * get_theta_dot(theta_x, theta_y,  w_x, w_y, w_z);
+end
