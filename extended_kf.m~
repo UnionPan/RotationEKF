@@ -1,4 +1,4 @@
-function [state_estimates, P] = extended_kf(current_estimates, gyro_input, acc_output, current_P, dt)
+function state_estimates = extended_kf(current_estimates, gyro_input, acc_output, current_P, dt)
  theta_x = current_estimates(1);
  theta_y = current_estimates(2);
  %linearize the system dynamics model around the current estimates
@@ -21,8 +21,8 @@ function [state_estimates, P] = extended_kf(current_estimates, gyro_input, acc_o
  Q = F*V*F';
  U = C'* sqrt(0.001)^(-1);
  %[P, L, H] = care(A, U, Q);
- dP = A * current_P + current_P * A' + Q - current_P * U * U' * current_P;
- P = current_P + dP * dt;
+ dP = A * current_P + current_P * A' + Q - current_P * U * U' * current_P
+ P = current_P + dP * dt
  G = P * C' * 0.001^(-1);
  state_change =  get_theta_dot(current_estimates, gyro_input) + G * (acc_output - acc_meter(current_estimates));
  %acc_output - acc_meter(current_estimates)

@@ -1,8 +1,8 @@
 rng(2022);    % For repeatable results
 dt = 0.1;     % seconds
-simTime = 6;   % seconds
+simTime = 5;   % seconds
 tspan = 0:dt:simTime;
-trueInitialState = [0.2;0.3;0.1];  % [theta_x; theta_y; theta_z; ]
+trueInitialState = 0.01;  % [theta_x; theta_y; theta_z; ]
 numSteps = length(tspan);
 trueStates = zeros(3,numSteps);
 trueStates(:,1) = trueInitialState;
@@ -13,20 +13,20 @@ gyro_inputs = [cos(tspan) + bias(1); sin(tspan) + bias(2); zeros(1, length(tspan
 %initialize the state estimation 
 stateEstimates = zeros(3,numSteps);
 stateEstimates(:,1) = [0.1, 0.3, 0.2];
-
+P = zeros(3,3,numSteps);
+P(:,:,1) = 0.1 * eye(3);
 for i = 2:length(tspan)
     if i ~=1
         trueStates(:,i) = stateModel(trueStates(:,i-1), gyro_inputs(:, i-1), dt);
     end
     measurements(:,i-1) = acc_meter(trueStates(:,i-1));
-    stateEstimates(:,i) = extended_kf(stateEstimates(:, i-1), gyro_inputs(:,i-1), measurements(:,i-1), dt);
-    stateEstimates(:,i) - trueStates(:,i)
-    i
+    [stateEstimates(:,i), P(:,:,i)] = extended_kf(stateEstimates(:, i-1), gyro_inputs(:,i-1), measurements(:,i-1), P(:,:,i-1), dt);
+    P(:,:,i)
+    %stateEstimates(:,i) - trueStates(:,i)
 end
-measurements(:,-1) = acc_meter(trueStates(:,i))
+measurements(:,i) = acc_meter(trueStates(:,i));
 
-gyro_inputs(:,51)
-gyro_inputs(:,52)
+
 figure(1)
 plot3(trueStates(1,:), trueStates(2,:), tspan);
 hold on
